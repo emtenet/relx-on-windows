@@ -12,3 +12,14 @@ Directory `rebar3-app` created by rebar3
 
 	$ rebar3 new release simple
 	$ ren simple rebar3-app
+
+### relx-app
+
+Directory `relx-app` copied from `rebar3-app` removing references to rebar so that **relx** can be tested separately from rebar.
+
+	$ mkdir relx-app
+	$ copy rebar3-app\apps relx-app
+	$ copy rebar3-app\config relx-app
+	$ edit relx-app\relx.config
+
+Relx configuration was extracted from the rebar configuration.
