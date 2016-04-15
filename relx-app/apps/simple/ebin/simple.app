@@ -8,8 +8,7 @@
     stdlib
    ]},
   {env,[]},
-  {modules, []},
-
+  {modules, [simple_app, simple_sup]},
   {maintainers, []},
   {licenses, []},
   {links, []}
