@@ -144,7 +144,26 @@ Add these fixes to GitHub repository emtenet/relx branch [issue-467](https://git
 
 #### Issue 2
 
-The `The system cannot find the path specified.` errors come from the `:write_ini` section trying to write to `C:\Program Files\erl7.3\bin\erl.ini`
+The `The system cannot find the path specified.` errors come from the `:write_ini` section trying to write to `c:\Program\erts-7.3\bin\erl.ini` instead of `C:\Program Files\erl7.3\erts-7.3\bin\erl.ini`
+
+This issue is already raised as [erlware/relx#464](https://github.com/erlware/relx/pull/464)
+
+### Test run #2
+
+#### Issue 3
+
+Running the test again:
+
+```
+> _rel\simple\bin\simple.cmd
+Access is denied.
+Access is denied.
+Access is denied.
+Access is denied.
+usage: simple (install|uninstall|start|stop|restart|upgrade|downgrade|console|ping|list|attach)
+```
+
+The `Access is denied.` errors come from the `:write_ini` section trying to write to `C:\Program Files\erl7.3\erts-7.3\bin\erl.ini`
 
 Windows 10 (and earlier?) locks down modifications to `Program Files` requiring 'run as Administrator'
 
@@ -152,32 +171,11 @@ This issue arrises when {include_erts, false} but the erl.ini file should not ne
 
 So, how to disable :write_ini when {include_erts, false}?
 
-FIX: only :write_ini if the erts_dir is found within the release dir
+FIX: only :write_ini if the erts_dir is found within the release dir.
 
-```
- :set_erts_dir_from_erl
-+@set skip_write_ini=yes
- @for /f "delims=" %%i in ('where erl') do @(
-```
+Or the inverse; in :set_erts_dir_from_erl set skip_write_ini=yes, then use that to skip the :write_ini section.
 
-and 
-
-```
- :write_ini
-+@if "%skip_write_ini%"=="yes" goto :eof
- @set erl_ini=%erts_dir%\bin\erl.ini
-```
-
-### Test run #2
-
-#### Issue 3
-
-```
-> _rel\simple\bin\simple.cmd console
-Windows cannot find 'c:\Program\erts-7.3\bin\werl.exe'. Make sure you've types the name correctly, then try again.
-```
-
-This issue is already raised as [erlware/relx#464](https://github.com/erlware/relx/pull/464)
+Add these fixes to GitHub repository emtenet/relx branch [skip-write-ini](https://github.com/emtenet/relx/tree/skip-write-ini)
 
 ### Test run #4
 
