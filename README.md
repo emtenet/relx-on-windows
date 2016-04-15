@@ -138,7 +138,6 @@ Script template `extended_bin_windows` is missing those rename commands, it is t
 
 4. FIX: Copy the rename commands from `bin_windows` to `extended_bin_windows`
 
-Add these fixes to GitHub repository emtenet/relx branch [emtenet-issue-1](https://github.com/emtenet/relx/tree/emtenet-issue-1)
-
 Generate [issue #467](https://github.com/erlware/relx/issues/467)
 
+Add these fixes to GitHub repository emtenet/relx branch [issue-467](https://github.com/emtenet/relx/tree/issue-467)
