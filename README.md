@@ -141,3 +141,29 @@ Script template `extended_bin_windows` is missing those rename commands, it is t
 Generate [issue #467](https://github.com/erlware/relx/issues/467)
 
 Add these fixes to GitHub repository emtenet/relx branch [issue-467](https://github.com/emtenet/relx/tree/issue-467)
+
+#### Issue 2
+
+The `The system cannot find the path specified.` errors come from the `:write_ini` section trying to write to `C:\Program Files\erl7.3\bin\erl.ini`
+
+Windows 10 (and earlier?) locks down modifications to `Program Files` requiring 'run as Administrator'
+
+This issue arrises when {include_erts, false} but the erl.ini file should not need to be modifed. When {include_erts, true} the script should have modification rights and updating the ini file may be necessary if the release directory structure is moved.
+
+So, how to disable :write_ini when {include_erts, false}?
+
+FIX: only :write_ini if the erts_dir is found within the release dir
+
+```
+ :set_erts_dir_from_erl
++@set skip_write_ini=yes
+ @for /f "delims=" %%i in ('where erl') do @(
+```
+
+and 
+
+```
+ :write_ini
++@if "%skip_write_ini%"=="yes" goto :eof
+ @set erl_ini=%erts_dir%\bin\erl.ini
+```
