@@ -293,3 +293,23 @@ win32_symlink_for_type(Source, Target, {ok, #file_info{type = directory}}) ->
     os:cmd("cmd /c mklink /j " ++ Target ++ " " ++ Source),
     ok.
 ```
+
+### Test run #5
+
+#### Issue 5
+
+With issues 1 to 4 wrapped up in emtenet/relx branch [windows-friendly](https://github.com/emtenet/relx/tree/windows-friendly) run:
+
+```
+> _rel\simple\bin\simple.cmd console
+```
+
+which produces `erl_crash.dump` that contains:
+
+```
+Slogan: init terminating in do_boot (cannot expand $ERTS_LIB_DIR in bootfile)
+```
+
+Commit [f89df2f](https://github.com/erlware/relx/commit/f89df2f4d693c8522fc9b911a6fc5bef31f338fc) added a boot variable ERTS_LIB_DIR with updates to `bin` and `extended_bin` scripts to provide that variable. The Windows scripts did not include those updates.
+
+Add boot variable to Windows scripts in emtenet/relx branch [add-boot-var](https://github.com/emtenet/relx/tree/add-boot-var)
