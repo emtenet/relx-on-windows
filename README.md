@@ -14,11 +14,9 @@ have been made for testing the `rebar` and `relx` commands.
 Issue 1 relates to the generation and renaming of configuration 
 files (`sys.config` and `vm.args`) with the `.orig` extension.
 
-## Issue 2
+## [Issue 2](issue-2.md)
 
-The `The system cannot find the path specified.` errors come from the `:write_ini` section trying to write to `c:\Program\erts-7.3\bin\erl.ini` instead of `C:\Program Files\erl7.3\erts-7.3\bin\erl.ini`
-
-This issue is already raised as [erlware/relx#464](https://github.com/erlware/relx/pull/464)
+Issue 2 relates to erts path discovery on Windows.
 
 ## Issue 3
 
