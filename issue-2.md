@@ -2,7 +2,7 @@
 
 ## Reproduce issue 1
 
-Issue 2 is reproduce with the same steps as [Issue 1](issue-1.md) 
+Issue 2 is reproduced with the same steps as [Issue 1](issue-1.md) 
 with fixes applied.
 
 ```

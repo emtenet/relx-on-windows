@@ -18,32 +18,10 @@ files (`sys.config` and `vm.args`) with the `.orig` extension.
 
 Issue 2 relates to erts path discovery on Windows.
 
-## Issue 3
+## [Issue 3](issue-3.md)
 
-Running the test again:
-
-```
-> _rel\simple\bin\simple.cmd
-Access is denied.
-Access is denied.
-Access is denied.
-Access is denied.
-usage: simple (install|uninstall|start|stop|restart|upgrade|downgrade|console|ping|list|attach)
-```
-
-The `Access is denied.` errors come from the `:write_ini` section trying to write to `C:\Program Files\erl7.3\erts-7.3\bin\erl.ini`
-
-Windows 10 (and earlier?) locks down modifications to `Program Files` requiring 'run as Administrator'
-
-This issue arrises when {include_erts, false} but the erl.ini file should not need to be modifed. When {include_erts, true} the script should have modification rights and updating the ini file may be necessary if the release directory structure is moved.
-
-So, how to disable :write_ini when {include_erts, false}?
-
-FIX: only :write_ini if the erts_dir is found within the release dir.
-
-Or the inverse; in :set_erts_dir_from_erl set skip_write_ini=yes, then use that to skip the :write_ini section.
-
-Add these fixes to GitHub repository emtenet/relx branch [skip-write-ini](https://github.com/emtenet/relx/tree/skip-write-ini)
+Issue 3 relates to modifications of the system installed erlang file `erl.ini`
+being `Access is denied.`
 
 ## Issue 4
 
