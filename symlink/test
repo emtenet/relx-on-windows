@@ -1,0 +1,97 @@
+#!/usr/bin/env escript
+
+-include_lib("kernel/include/file.hrl").
+
+main(_) ->
+  prepare(),
+  expect(fun file:make_symlink/2, symlink, dir, ok, directory, symlink),
+  expect(fun file:make_symlink/2, symlink, file, ok, regular, symlink),
+  expect(fun file:make_link/2, link, dir, error, error, error),
+  expect(fun file:make_link/2, link, file, ok, regular, regular),
+  MakeJunction = fun (Existing, New) -> make_junction(Existing, New) end,
+  expect(MakeJunction, junction, dir, ok, directory, symlink),
+  cleanup(),
+  ok.
+
+make_junction(Existing, New) ->
+  case os:type() of
+    {win32, nt} ->
+      "Junction created " ++ _ = os:cmd("mklink /J " ++ New ++ " " ++ Existing),
+      ok;
+    _ ->
+      file:make_symlink(Existing, New)
+  end.
+
+expect(Fun, Method, Type, ExpectFun, ExpectFile, ExpectLink) ->
+  Newname = new(Type),
+  cleanup(Newname, Type),
+  expect_fun(ExpectFun, Fun(existing(Type), Newname), Method, Type),
+  expect_info(ExpectFile, file:read_file_info(Newname), Method, Type),
+  expect_info(ExpectLink, file:read_link_info(Newname), Method, Type),
+  cleanup(Newname, Type),
+  ok.
+
+expect_fun(ok, ok, _Method, _Type) ->
+  ok;
+expect_fun(error, {error, eacces}, _Method, _Type) ->
+  ok;
+expect_fun(error, {error, eperm}, _Method, _Type) ->
+  ok.
+
+expect_info(Type, {ok, #file_info{type = Type}}, _Method, _Type) ->
+  ok;
+expect_info(error, {error, enoent}, _Method, _Type) ->
+  ok.
+
+new(dir) -> 
+  "new.dir";
+new(file) -> 
+  "new.file".
+
+existing(dir) -> 
+  "existing.dir";
+existing(file) -> 
+  "existing.file".
+
+prepare() ->
+  prepare(existing(dir), dir),
+  prepare(existing(file), file),
+  ok.
+
+prepare(Dirname, dir) ->
+  prepare_dir(file:read_file_info(Dirname), Dirname);
+prepare(Filename, file) ->
+  prepare_file(file:read_file_info(Filename), Filename).
+
+prepare_dir({ok, #file_info{type = directory}}, _Dirname) ->
+  ok;
+prepare_dir({error, enoent}, Dirname) ->
+  ok = file:make_dir(Dirname).
+
+prepare_file({ok, #file_info{type = regular}}, _Filename) ->
+  ok;
+prepare_file({error, enoent}, Filename) ->
+  ok = file:write_file(Filename, <<"">>).
+
+cleanup() ->
+  cleanup(existing(dir), dir),
+  cleanup(existing(file), file),
+  ok.
+
+cleanup(Dirname, dir) ->
+  % need file:delete() for symlink dirs on non-Windows
+  case {os:type(), file:read_link_info(Dirname)} of
+    {{win32, _}, _} ->
+      cleanup_expect(file:del_dir(Dirname), Dirname);
+    {_, {ok, #file_info{type = symlink}}} ->
+      cleanup_expect(file:delete(Dirname), Dirname);
+    _ ->
+      cleanup_expect(file:del_dir(Dirname), Dirname)
+  end;
+cleanup(Filename, file) ->
+  cleanup_expect(file:delete(Filename), Filename).
+
+cleanup_expect(ok, _Name) ->
+  ok;
+cleanup_expect({error, enoent}, _Name) ->
+  ok.
