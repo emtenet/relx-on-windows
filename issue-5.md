@@ -54,3 +54,9 @@ the Windows scripts to provide the variable when starting erlang.
 
 These changes have been made in emtenet/relx branch 
 [add-boot-var](https://github.com/emtenet/relx/tree/add-boot-var).
+
+## Actions taken
+
+Issue raised on erlware/relx as [#478](https://github.com/erlware/relx/issues/478).
+
+Pull request submitted to erlware/relx as [#479](https://github.com/erlware/relx/pull/479).
